@@ -1,0 +1,369 @@
+/* 기본 스타일 리셋 및 변수 설정 */
+:root {
+  --primary-color: #000000;
+  --background-color: #ffffff;
+  --border-color: #e0e0e0;
+  --hover-color: #f5f5f5;
+  --active-color: #eeeeee;
+  --text-color: #333333;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 메모 에디터 컨테이너 */
+.memo-editor {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-color);
+  box-shadow: var(--shadow);
+}
+
+/* 에디터 메뉴 스타일링 */
+.editor-menu {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.editor-menu button {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editor-menu button:hover {
+  background: var(--hover-color);
+}
+
+.editor-menu button.is-active {
+  background: var(--primary-color);
+  color: var(--background-color);
+  border-color: var(--primary-color);
+}
+
+.menu-group {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--hover-color);
+}
+
+/* 에디터 콘텐츠 영역 */
+.ProseMirror {
+  padding: 20px;
+  min-height: 200px;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.ProseMirror p {
+  margin: 0 0 1em 0;
+}
+
+/* 메모 생성 폼 스타일링 */
+.memo-create {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--background-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.title-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.2em;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.title-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* 버튼 그룹 스타일링 */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-button {
+  background: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.cancel-button {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.cancel-button:hover {
+  background: var(--hover-color);
+}
+
+/* 메모 목록 페이지 스타일링 */
+.memo-list {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.memo-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.create-button {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-button:hover {
+  opacity: 0.9;
+}
+
+/* 메모 목록 스타일링 수정 */
+.memo-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.memo-item {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.memo-item:hover {
+  transform: translateX(4px);
+  border-color: var(--primary-color);
+}
+
+.memo-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memo-item h3 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--text-color);
+}
+
+.memo-date {
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .memo-create {
+    padding: 16px;
+  }
+
+  .memo-list {
+    padding: 16px;
+  }
+
+  .editor-menu {
+    flex-wrap: wrap;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+
+/* 코드블록 스타일링 */
+.ProseMirror pre {
+  background: #0d0d0d;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.ProseMirror pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+/* 언어 선택 드롭다운 스타일링 */
+.code-language-select {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-language-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 코드 하이라이팅을 위한 스타일 */
+.hljs-comment,
+.hljs-quote {
+  color: #616161;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #f98181;
+}
+
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+  color: #fbbc88;
+}
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+  color: #b9f18d;
+}
+
+.hljs-title,
+.hljs-section {
+  color: #faf594;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #70cff8;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* 메모 아이템 스타일링 */
+.memo-item {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+.memo-item:hover {
+  transform: translateY(-2px);
+}
+
+.memo-item h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.2em;
+  color: var(--primary-color);
+}
+
+.memo-item .memo-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* 메모 내용 스타일링 */
+.memo-item .ProseMirror {
+  padding: 0;
+  min-height: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* 이미지 스타일 */
+.memo-image {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid var(--primary-color);
+}

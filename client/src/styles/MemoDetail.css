@@ -1,0 +1,149 @@
+.memo-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.memo-title {
+  font-size: 2em;
+  color: var(--primary-color);
+  margin-bottom: 16px;
+}
+
+.memo-info {
+  display: flex;
+  gap: 16px;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.memo-content {
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* TipTap 에디터 스타일 적용 */
+.memo-content h1 {
+  font-size: 2em;
+  margin: 1em 0;
+}
+.memo-content h2 {
+  font-size: 1.5em;
+  margin: 0.83em 0;
+}
+.memo-content h3 {
+  font-size: 1.17em;
+  margin: 0.67em 0;
+}
+.memo-content ul {
+  list-style-type: disc;
+  padding-left: 2em;
+}
+.memo-content ol {
+  list-style-type: decimal;
+  padding-left: 2em;
+}
+.memo-content blockquote {
+  border-left: 4px solid var(--border-color);
+  margin: 1em 0;
+  padding-left: 1em;
+  color: #666;
+}
+.memo-content pre {
+  background: #0d0d0d;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin: 1em 0;
+}
+.memo-content code {
+  font-family: "JetBrainsMono", monospace;
+}
+
+/* TipTap 에디터 컨텐츠 정렬 */
+.memo-content .ProseMirror {
+  text-align: left;
+}
+
+/* 플로팅 버튼 */
+.floating-button {
+  padding: 12px 24px;
+  background: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit-button {
+  background: var(--text-color);
+}
+
+/* 수정 모드 스타일 */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.title-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 2em;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.title-input:focus {
+  border-color: var(--primary-color);
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.submit-button {
+  padding: 12px 24px;
+  background: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.floating-buttons {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.delete-button:hover {
+  opacity: 0.9;
+}

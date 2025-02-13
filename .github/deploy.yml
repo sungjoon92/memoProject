@@ -1,0 +1,59 @@
+name: deploy service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ssh-agent: # Job 이름
+    runs-on: ubuntu-24.04 # GitHub 워크스페이스 환경
+
+    steps: # 실행할 작업(step)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
+          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+
+      - name: Add Remote Server Fingerprint to Known Hosts
+        run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts || true
+
+      - name: Login DockerHub
+        run: echo '${{ secrets.DOCKER_PASSWORD}}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
+
+      - name: Docker Image Build
+        run: docker compose -f docker-compose.yml build
+
+      - name: Docker Image Push
+        run: docker compose -f docker-compose.yml push
+
+      - name: Copy .env / docker-compose.yml
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.yml,.env"
+          target: "~/github-actions-work-directory"
+
+      - name: Pull Image & Up Container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/github-actions-work-directory
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml down
+            docker compose -f docker-compose.yml up -d

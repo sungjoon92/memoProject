@@ -1,0 +1,70 @@
+# 문법 버전(선택)
+
+# services 블록
+services:
+  # 개별 컨테이너(서비스) 블록
+  # # db
+  # # # 컨테이너명, 베이스 이미지, 볼륨, 네트워크, 헬스체크, 환경변수파일, 포트(선택)
+  db:
+    container_name: db-container
+    image: mysql:8.0
+    volumes:
+      # /var/lib/mysql - mysql 데이터 경로
+      - db-volume:/var/lib/mysql
+    ports:
+      - 3310:3306
+    networks:
+      - db-network
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  # # backend(api)
+  # # # 컨테이너명, Dockerfile 경로, 이미지명, 포트(선택), 네트워크, 환경변수파일, 의존관계
+  api:
+    container_name: api-container
+    build:
+      # Dockerfile 경로
+      context: ./api
+      dockerfile: Dockerfile
+    image: wonsungjoon/api-image:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - db-network
+      - api-network
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+  # # frontned(client)
+  # # # 컨테이너명, Dockerfile 경로, 이미지명, 포트, 네트워크, 환경변수파일, 의존관계
+  client:
+    container_name: client-container
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: wonsungjoon/client:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - api-network
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - api
+
+# volumes와 networks 블록
+volumes:
+  db-volume:
+
+networks:
+  db-network:
+  api-network:
