@@ -11,8 +11,8 @@ services:
     volumes:
       # /var/lib/mysql - mysql 데이터 경로
       - db-volume:/var/lib/mysql
-    ports:
-      - 3310:3306
+    # ports:
+    #   - 3310:3306
     networks:
       - db-network
     env_file:
@@ -32,8 +32,8 @@ services:
       context: ./api
       dockerfile: Dockerfile
     image: wonsungjoon/api-image:latest
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     networks:
       - db-network
       - api-network
@@ -49,7 +49,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: wonsungjoon/client:latest
+    image: wonsungjoon/client-image:latest
     ports:
       - "80:80"
       - "443:443"
