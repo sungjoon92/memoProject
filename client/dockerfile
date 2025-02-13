@@ -16,6 +16,7 @@ COPY . .
 # 빌드 실행 (React 같은 프론트엔드 프로젝트의 정적 파일 생성)
 RUN npm run build
 
+
 # Nginx 최신 안정화 버전의 Alpine 기반 이미지 사용
 FROM nginx
 
