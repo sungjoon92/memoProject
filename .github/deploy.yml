@@ -1,4 +1,4 @@
-name: deploy service
+name: ssh
 
 on:
   push:
