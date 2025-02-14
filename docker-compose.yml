@@ -69,15 +69,15 @@ services:
         VITE_API_URL: ${VITE_API_URL}
     image: wonsungjoon/client-image:latest
     environment:
-      - DOMAIN=43.203.180.17.sslip.io
+      - DOMAIN=${DOMAIN}
     ports:
       - "80:80"
       - "443:443"
     networks:
       - api-network
     volumes:
-      - /etc/letsencrypt/live/43.203.180.17.sslip.io/fullchain.pem:/etc/letsencrypt/live/43.203.180.17.sslip.io/fullchain.pem:ro
-      - /etc/letsencrypt/live/43.203.180.17.sslip.io/privkey.pem:/etc/letsencrypt/live/43.203.180.17.sslip.io/privkey.pem:ro
+      - /etc/letsencrypt/live/${DOMAIN}/fullchain.pem:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem:ro
+      - /etc/letsencrypt/live/${DOMAIN}/privkey.pem:/etc/letsencrypt/live/${DOMAIN}/privkey.pem:ro
     env_file:
       - .env
     depends_on:
