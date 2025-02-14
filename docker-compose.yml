@@ -65,8 +65,7 @@ services:
         - type=local,dest=/tmp/.docker-cache/client,mode=max
       cache_from:
         - type=local,src=/tmp/.docker-cache/client,mode=max
-      args:
-        VITE_API_URL: ${VITE_API_URL}
+
     image: wonsungjoon/client-image:latest
     environment:
       - DOMAIN=${DOMAIN}
