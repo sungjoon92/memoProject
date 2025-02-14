@@ -79,12 +79,12 @@ jobs:
       # Docker 이미지 빌드
       - name: Docker Image Build
         run: |
-          docker compose -f docker-compose-actions.yml build --build-arg BUILDKIT_INLINE_CACHE=1
+          docker compose -f docker-compose.yml build --build-arg BUILDKIT_INLINE_CACHE=1
 
       # Docker 이미지 푸시
       - name: Docker Image Push
         run: |
-          docker compose -f docker-compose-actions.yml push
+          docker compose -f docker-compose.yml push
 
       - name: Add Remote Server Fingerprint to Known Hosts
         run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts || true
