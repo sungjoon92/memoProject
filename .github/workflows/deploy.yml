@@ -1,21 +1,22 @@
-name: ssh
+name: ssh # GitHub Actions의 Workflow 이름
 
 on:
   push:
     branches:
-      - main
+      - main # main 브랜치에 push될 때 실행
     paths:
-      - ".github/workflows/deploy.yml"
-      - "docker-compose.yml"
-      - "Dockerfile"
-      - "client/**"
-      - "api/**"
+      - ".github/workflows/deploy.yml" # Workflow 파일이 변경될 때 실행
+      - "docker-compose.yml" # docker-compose.yml 변경 시 실행
+      - "Dockerfile" # Dockerfile 변경 시 실행
+      - "client/**" # 클라이언트 코드 변경 시 실행
+      - "api/**" # API 서버 코드 변경 시 실행
 
 jobs:
-  ssh-agent: # Job 이름
-    runs-on: ubuntu-24.04 # GitHub 워크스페이스 환경
+  ssh-agent:
+    runs-on: ubuntu-24.04 # GitHub Actions 실행 환경 (Ubuntu 24.04)
 
-    steps: # 실행할 작업(step)
+    steps:
+      # 1️⃣ Discord 알림 (배포 시작)
       - name: Discord Notification - Start
         uses: sarisia/actions-status-discord@v1
         with:
@@ -27,35 +28,33 @@ jobs:
             Commit: ${{ github.event.head_commit.message }}
           color: 0x0000ff
 
-      # 소스 코드를 워크스페이스로 체크아웃
+      # 2️⃣ 소스 코드 체크아웃 (GitHub Actions 환경에 코드 다운로드)
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      # GitHub Actions Cache 설정
+      # 3️⃣ Docker 캐싱 설정 (빌드 속도 최적화를 위해)
       - name: Set Up Cache Repo
         uses: actions/cache@v4.2.0
         with:
           path: /tmp/.docker-cache
           key: docker-cache-${{ github.sha }}
-          # 이전 캐쉬 불러오기
           restore-keys: docker-cache-
 
+      # 4️⃣ SSH 에이전트 설정 (원격 서버 접근을 위해)
       - name: SSH Agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 원격 서버의 호스트 키를 known_hosts에 추가하여 SSH 연결 신뢰 설정
+      # 5️⃣ 원격 서버의 SSH 키를 등록 (서버의 호스트 키를 신뢰하도록 설정)
       - name: Add Host Key to Known Hosts
         run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      # DockerHub 로그인 - 이미지 푸시를 위한 인증
+      # 6️⃣ DockerHub 로그인 (Docker 이미지를 push하기 위해 필요)
       - name: DockerHub Login
         run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
 
-      # - name: Checkout code
-      #   uses: actions/checkout@v4
-
+      # 7️⃣ .env 파일 생성 (환경 변수 설정)
       - name: Create .env file
         run: |
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
@@ -66,36 +65,31 @@ jobs:
           echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
 
-      # Docker Buildx 설정
+      # 8️⃣ Docker Buildx 설정 (멀티 플랫폼 빌드 지원)
       - name: Set up Docker Buildx
-        uses:
-          docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3
 
-          # BuildKit 빌더 생성
+      # 9️⃣ BuildKit 빌더 생성 및 사용 설정
       - name: Create BuildKit Builder
         run: |
           docker buildx create --use --name buildkit
           docker buildx use buildkit
 
-      # Docker 이미지 빌드
+      # 🔥 10️⃣ Docker 이미지 빌드
       - name: Docker Image Build
         run: |
           docker compose -f docker-compose.yml build --build-arg BUILDKIT_INLINE_CACHE=1
 
-      # Docker 이미지 푸시
+      # 🔥 11️⃣ Docker 이미지 푸시 (DockerHub 업로드)
       - name: Docker Image Push
         run: |
           docker compose -f docker-compose.yml push
 
+      # 12️⃣ 원격 서버의 SSH 키 등록 (SSH 포트 확인 후 등록)
       - name: Add Remote Server Fingerprint to Known Hosts
         run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts || true
 
-      - name: Login DockerHub
-        run: echo '${{ secrets.DOCKER_PASSWORD}}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
-
-      - name: Docker Image Push
-        run: docker compose -f docker-compose.yml push
-
+      # 13️⃣ Docker Compose 파일 & .env 파일 원격 서버로 복사
       - name: Copy .env / docker-compose.yml
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -106,6 +100,7 @@ jobs:
           source: "docker-compose.yml,.env"
           target: "~/github-actions-work-directory"
 
+      # 🔥 14️⃣ 원격 서버에서 컨테이너 실행
       - name: Pull Image & Up Container
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -115,11 +110,19 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/github-actions-work-directory
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml down
-            docker compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.yml pull  # 최신 이미지 다운로드
+            docker compose -f docker-compose.yml down  # 기존 컨테이너 종료
+            docker compose -f docker-compose.yml up -d  # 새 컨테이너 실행
 
-      # Discord 알림 - 배포 성공
+            # 🛑 불필요한 이미지 삭제 전, 현재 사용 중인 컨테이너 확인
+            echo "🔥 현재 실행 중인 컨테이너 목록:"
+            docker ps
+
+            # 불필요한 이미지 삭제 (확인 후 실행하도록 유도)
+            echo "⚠️ 사용하지 않는 이미지 삭제 중..."
+            docker system prune -f
+
+      # ✅ 15️⃣ Discord 알림 (배포 성공)
       - name: Discord Notification - Success
         if: success()
         uses: sarisia/actions-status-discord@v1
@@ -132,7 +135,7 @@ jobs:
             Commit: ${{ github.event.head_commit.message }}
           color: 0x00ff00
 
-      # Discord 알림 - 배포 실패
+      # ❌ 16️⃣ Discord 알림 (배포 실패)
       - name: Discord Notification - Failure
         if: failure()
         uses: sarisia/actions-status-discord@v1
