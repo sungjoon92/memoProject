@@ -65,6 +65,7 @@ jobs:
           echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
           echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
+          echo "API_RUL=${{ secrets.API_RUL }}" >> .env
 
       # 8️⃣ Docker Buildx 설정 (멀티 플랫폼 빌드 지원)
       - name: Set up Docker Buildx

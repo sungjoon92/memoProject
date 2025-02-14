@@ -1,0 +1,15 @@
+# HTTP 요청을 HTTPS로 리다이렉트하는 설정
+server {
+    # HTTP 요청은 80 포트에서 받습니다. 
+    # 이 포트는 SSL을 사용하지 않는 일반 HTTP 요청을 처리합니다.
+    listen 80;
+    
+    # 서버 도메인 설정
+    server_name 43.203.180.17.sslip.io;
+
+    # 모든 요청을 HTTPS로 리다이렉트합니다.
+    # 301 리다이렉트를 사용하여 클라이언트가 해당 URL을 영구적으로 사용하도록 유도합니다.
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}

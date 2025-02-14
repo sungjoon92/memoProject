@@ -1,0 +1,54 @@
+server {
+    # 443 포트에서 SSL을 사용하여 서버를 리슨합니다. 
+    # SSL을 사용하려면 반드시 이 포트에서 대기해야 합니다.
+    listen 443 ssl;
+    
+    # HTTP/2 프로토콜을 활성화합니다. 
+    # HTTP/2는 성능 개선 및 다양한 기능을 제공합니다.
+    http2 on;
+
+    # 서버의 도메인 이름을 지정합니다. 
+    # 클라이언트가 요청할 때 이 도메인으로 요청이 들어옵니다.
+    server_name 43.203.180.17.sslip.io;
+
+    # SSL 인증서와 개인 키를 설정합니다.
+    # "fullchain.pem"은 서버 인증서와 체인 인증서를 포함한 파일이고, 
+    # "privkey.pem"은 서버의 개인 키 파일입니다. 
+    ssl_certificate /etc/letsencrypt/live/43.203.180.17.sslip.io/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/43.203.180.17.sslip.io/privkey.pem;
+
+    # SSL 보안 설정
+    # SSL 프로토콜 버전을 설정합니다. TLSv1.2와 TLSv1.3을 사용하도록 설정하여, 보안이 강화됩니다.
+    ssl_protocols TLSv1.2 TLSv1.3;
+    
+    # SSL 암호화 방식 설정
+    # 다양한 암호화 방식 중에서 안전한 것들을 선택하여, SSL 연결의 보안을 강화합니다.
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    
+    # 서버에서 제안하는 암호화 방식을 우선적으로 사용하도록 설정합니다.
+    ssl_prefer_server_ciphers on;
+
+    # 웹 서버의 기본 루트 디렉토리 설정 (정적 파일 위치)
+    root /usr/share/nginx/html;
+    
+    # 기본 페이지 파일을 "index.html"로 설정합니다.
+    index index.html;
+
+    # 기본 루트 경로("/")에 대한 요청 처리
+    location / {
+        # 요청한 파일이 있으면 해당 파일을 반환하고, 
+        # 없으면 "index.html"을 반환하도록 합니다.
+        try_files $uri /index.html;
+    }
+
+    # "/api/" 경로로 들어오는 요청은 API 서버로 프록시합니다.
+    # "proxy_pass"는 요청을 다른 서버로 전달하는 역할을 합니다. 여기서는 Docker 컨테이너로 요청을 전달합니다.
+    location /api/ {
+        # api-container라는 컨테이너의 8080 포트로 요청을 전달합니다.
+        proxy_pass http://api-container:8080;
+        
+        # 원본 요청의 Host 헤더를 전달합니다. 
+        # 원본 요청의 도메인 정보가 필요할 수 있기 때문에 이를 그대로 전달합니다.
+        proxy_set_header Host $host;
+    }
+}
