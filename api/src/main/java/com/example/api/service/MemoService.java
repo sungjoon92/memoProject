@@ -53,7 +53,7 @@ public class MemoService {
                 .orElseThrow(() -> new IllegalArgumentException("메모를 찾을 수 없습니다."));
 
         // 기존 메모의 필드를 수정
-        memo.updateMemo(memo.getTitle(), memo.getContent());
+        memo.updateMemo(requestDto.getTitle(), requestDto.getContent());
 
 
         // 수정된 메모를 DTO로 변환하여 반환
