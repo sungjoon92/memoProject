@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - ".github/workflows/deploy.yml"
+      - "docker-compose.yml"
+      - "Dockerfile"
+      - "client/**"
+      - "api/**"
 
 jobs:
   ssh-agent: # Job 이름
@@ -21,8 +27,38 @@ jobs:
             Commit: ${{ github.event.head_commit.message }}
           color: 0x0000ff
 
+      # 소스 코드를 워크스페이스로 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
+
+      # GitHub Actions Cache 설정
+      - name: Cache Docker layers
+        uses: actions/cache@v4.2.0
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 원격 서버의 호스트 키를 known_hosts에 추가하여 SSH 연결 신뢰 설정
+      - name: Add Host Key to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # Docker Buildx 설정
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # DockerHub 로그인 - 이미지 푸시를 위한 인증
+      - name: DockerHub Login
+        run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
+
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
 
       - name: Create .env file
         run: |
@@ -33,6 +69,22 @@ jobs:
           echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
           echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+
+      # BuildKit 빌더 생성
+      - name: Create BuildKit Builder
+        run: |
+          docker buildx create --use --name buildkit
+          docker buildx use buildkit
+
+      # Docker 이미지 빌드
+      - name: Docker Image Build
+        run: |
+          docker compose -f docker-compose-actions.yml build --build-arg BUILDKIT_INLINE_CACHE=1
+
+      # Docker 이미지 푸시
+      - name: Docker Image Push
+        run: |
+          docker compose -f docker-compose-actions.yml push
 
       - name: Add Remote Server Fingerprint to Known Hosts
         run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts || true

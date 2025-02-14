@@ -30,6 +30,13 @@ services:
     build:
       # Dockerfile 경로
       context: ./api
+      # BuildKit 캐시 설정
+      # 캐시 불러올 폴더
+      cache_from:
+        - type=local,src=/tmp/.buildx-cache/api
+          # 캐시 저장할 폴더
+      cache_to:
+        - type=local,dest=/tmp/.buildx-cache/backend,mode=max
       dockerfile: Dockerfile
     image: wonsungjoon/api-image:latest
     # ports:
@@ -48,7 +55,15 @@ services:
     container_name: client-container
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile:
+        Dockerfile
+        # BuildKit 캐시 설정
+      cache_from:
+        - type=local,src=/tmp/.buildx-cache/frontend
+      cache_to:
+        - type=local,dest=/tmp/.buildx-cache/frontend,mode=max
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     image: wonsungjoon/client-image:latest
     ports:
       - "80:80"
