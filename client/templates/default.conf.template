@@ -5,7 +5,7 @@ server {
     listen 80;
     
     # 서버 도메인 설정
-    server_name 43.203.180.17.sslip.io;
+    server_name ${DOMAIN};
 
     # 모든 요청을 HTTPS로 리다이렉트합니다.
     # 301 리다이렉트를 사용하여 클라이언트가 해당 URL을 영구적으로 사용하도록 유도합니다.
