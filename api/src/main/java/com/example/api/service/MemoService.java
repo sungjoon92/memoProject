@@ -55,11 +55,9 @@ public class MemoService {
         // 기존 메모의 필드를 수정
         memo.updateMemo(memo.getTitle(), memo.getContent());
 
-        // 수정된 메모 저장
-        Memo updatedMemo = memoRepository.save(memo);
 
         // 수정된 메모를 DTO로 변환하여 반환
-        return MemoResponseDto.of(updatedMemo);
+        return MemoResponseDto.of(memoRepository.save(memo));
     }
 
 } 
