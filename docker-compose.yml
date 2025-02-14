@@ -33,10 +33,10 @@ services:
       # BuildKit 캐시 설정
       # 캐시 불러올 폴더
       cache_from:
-        - type=local,src=/tmp/.buildx-cache/api
+        - type=local,src=/tmp/.docker-cache/api
           # 캐시 저장할 폴더
       cache_to:
-        - type=local,dest=/tmp/.buildx-cache/backend,mode=max
+        - type=local,dest=/tmp/.docker-cache/backend,mode=max
       dockerfile: Dockerfile
     image: wonsungjoon/api-image:latest
     # ports:
@@ -59,9 +59,9 @@ services:
         Dockerfile
         # BuildKit 캐시 설정
       cache_from:
-        - type=local,src=/tmp/.buildx-cache/frontend
+        - type=local,src=/tmp/.docker-cache/frontend
       cache_to:
-        - type=local,dest=/tmp/.buildx-cache/frontend,mode=max
+        - type=local,dest=/tmp/.docker-cache/frontend,mode=max
       args:
         VITE_API_URL: ${VITE_API_URL}
     image: wonsungjoon/client-image:latest
