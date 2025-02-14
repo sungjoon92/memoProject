@@ -76,8 +76,8 @@ services:
     networks:
       - api-network
     volumes:
-      - /etc/letsencrypt/live/${DOMAIN}/fullchain.pem:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem:ro
-      - /etc/letsencrypt/live/${DOMAIN}/privkey.pem:/etc/letsencrypt/live/${DOMAIN}/privkey.pem:ro
+      - /etc/letsencrypt/live/43.203.180.17.sslip.io/fullchain.pem:/etc/letsencrypt/live/43.203.180.17.sslip.io/fullchain.pem:ro
+      - /etc/letsencrypt/live/43.203.180.17.sslip.io/privkey.pem:/etc/letsencrypt/live/43.203.180.17.sslip.io/privkey.pem:ro
     env_file:
       - .env
     depends_on:
