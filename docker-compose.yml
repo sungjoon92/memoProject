@@ -12,7 +12,7 @@ services:
       # /var/lib/mysql - mysql 데이터 경로
       - db-volume:/var/lib/mysql
     # ports:
-    #   - 3310:3306
+    #   - 3308:3306
     networks:
       - db-network
     env_file:
@@ -34,11 +34,11 @@ services:
 
       # BuildKit 캐시 설정
       # 캐시 불러올 폴더
-      cache_to:
-        - type=local,dest=/tmp/.docker-cache/api,mode=max
-      cache_from:
-        - type=local,src=/tmp/.docker-cache/api,mode=max
-          # 캐시 저장할 폴더
+      # cache_to:
+      #   - type=local,dest=/tmp/.docker-cache/api,mode=max
+      # cache_from:
+      #   - type=local,src=/tmp/.docker-cache/api,mode=max
+      # 캐시 저장할 폴더
 
     image: wonsungjoon/api-image:latest
     # ports:
@@ -61,22 +61,22 @@ services:
         Dockerfile
 
         # BuildKit 캐시 설정
-      cache_to:
-        - type=local,dest=/tmp/.docker-cache/client,mode=max
-      cache_from:
-        - type=local,src=/tmp/.docker-cache/client,mode=max
+      # cache_to:
+      #   - type=local,dest=/tmp/.docker-cache/client,mode=max
+      # cache_from:
+      #   - type=local,src=/tmp/.docker-cache/client,mode=max
 
     image: wonsungjoon/client-image:latest
-    environment:
-      - DOMAIN=${DOMAIN}
+    # environment:
+    #   - DOMAIN=${DOMAIN}
     ports:
       - "80:80"
-      - "443:443"
+      # - "443:443"
     networks:
       - api-network
-    volumes:
-      - /etc/letsencrypt/live/${DOMAIN}/fullchain.pem:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem:ro
-      - /etc/letsencrypt/live/${DOMAIN}/privkey.pem:/etc/letsencrypt/live/${DOMAIN}/privkey.pem:ro
+    # volumes:
+    #   - /etc/letsencrypt/live/${DOMAIN}/fullchain.pem:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem:ro
+    #   - /etc/letsencrypt/live/${DOMAIN}/privkey.pem:/etc/letsencrypt/live/${DOMAIN}/privkey.pem:ro
     env_file:
       - .env
     depends_on:
